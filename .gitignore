@@ -1,0 +1,35 @@
+# Compilación Java
+target/
+*.class
+*.jar
+*.war
+
+# Logs
+logs/
+*.log
+
+# Maven
+.mvn/
+!wrapper/maven-wrapper.jar
+
+# Gradle
+.gradle/
+build/
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Variables de entorno
+.env
+
+# Config local
+application-local.yml
+application-local.properties
