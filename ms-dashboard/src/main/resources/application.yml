@@ -1,0 +1,35 @@
+server:
+  port: 8089
+
+spring:
+  application:
+    name: ms-dashboard
+
+jwt:
+  secret: ${JWT_SECRET:sportpulse-secret-key-2025-development-only}
+
+rapidapi:
+  key: ${RAPIDAPI_KEY:your-rapidapi-key-here}
+  host: api-football-v1.p.rapidapi.com
+  base-url: https://api-football-v1.p.rapidapi.com/v3
+
+services:
+  fixtures-url: ${FIXTURES_SERVICE_URL:http://localhost:8085}
+  standings-url: ${STANDINGS_SERVICE_URL:http://localhost:8086}
+  leagues-url: ${LEAGUES_SERVICE_URL:http://localhost:8082}
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+logging:
+  level:
+    com.sportpulse: DEBUG

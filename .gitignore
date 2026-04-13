@@ -1,0 +1,41 @@
+# ─── Secrets ───────────────────────────────
+.env
+
+# ─── Maven ─────────────────────────────────
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+*.jar
+*.war
+*.ear
+
+# ─── IDE - IntelliJ IDEA ───────────────────
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# ─── IDE - VS Code ─────────────────────────
+.vscode/
+*.code-workspace
+
+# ─── IDE - Eclipse ─────────────────────────
+.classpath
+.project
+.settings/
+.springBeans
+.sts4-cache
+
+# ─── OS ────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── Logs ──────────────────────────────────
+*.log
+logs/
+
+# ─── Docker ────────────────────────────────
+# (docker-compose.yml SI se sube, solo ignoramos overrides locales)
+docker-compose.override.yml
