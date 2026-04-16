@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -76,6 +77,7 @@ public class HealthService {
                 .uri(baseUrl + "/actuator/health")
                 .retrieve()
                 .bodyToMono(String.class)
+                .timeout(Duration.ofSeconds(2))
                 .map(body -> "UP")
                 .onErrorReturn("DOWN");
     }
