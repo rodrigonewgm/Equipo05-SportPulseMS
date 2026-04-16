@@ -13,28 +13,32 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Map<String, Object>> handleRuntime(RuntimeException ex){
+    //Maneja excepcion de mail duplicado
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<Map<String, Object>> handleUserExits(){
 
-        if("USER_ALREADY_EXISTS".equals(ex.getMessage())){
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "USER_ALREADY_EXISTS");
-            error.put("message", "Ya existe un usuario con ese email");
-            error.put("timestamp", Instant.now());
+        Map<String, Object> error = new HashMap<>();
 
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
-        }
+        error.put("error", "USER_ALREADY_EXISTS");
+        error.put("message", "Ya existe un usuario con ese email");
+        error.put("timestamp", Instant.now());
 
-        if("USERNAME_ALREADY_EXISTS".equals(ex.getMessage())){
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "USERNAME_ALREADY_EXISTS");
-            error.put("message", "Ya existe un usuario con ese username");
-            error.put("timestamp", Instant.now());
-
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
-        }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
+
+    //Maneja excepcion de username duplicado
+    @ExceptionHandler(UsernameAlreadyExistsException.class)
+    public ResponseEntity<Map<String, Object>> handleUsernameExits(){
+
+        Map<String, Object> error = new HashMap<>();
+
+        error.put("error", "USERNAME_ALREADY_EXISTS");
+        error.put("message", "Ya existe un usuario con ese username");
+        error.put("timestamp", Instant.now());
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationErrors(MethodArgumentNotValidException ex){
