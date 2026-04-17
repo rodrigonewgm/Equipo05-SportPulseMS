@@ -13,27 +13,37 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Map<String, Object>> handleRuntime(RuntimeException ex){
+    @ExceptionHandler(UsernameAlreadyExistsException.class)
+    public ResponseEntity<Map<String, Object>> handleUserAlreadyExists(UsernameAlreadyExistsException ex) {
+        Map<String, Object> error = new HashMap<>();
+        error.put("error", "USER_ALREADY_EXISTS");
+        error.put("message", ex.getMessage());
+        error.put("timestamp", Instant.now());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
 
-        if("USER_ALREADY_EXISTS".equals(ex.getMessage())){
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "USER_ALREADY_EXISTS");
-            error.put("message", "Ya existe un usuario con ese email");
-            error.put("timestamp", Instant.now());
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<Map<String, Object>> handleUserExits(){
 
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
-        }
+        Map<String, Object> error = new HashMap<>();
 
-        if("USERNAME_ALREADY_EXISTS".equals(ex.getMessage())){
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "USERNAME_ALREADY_EXISTS");
-            error.put("message", "Ya existe un usuario con ese username");
-            error.put("timestamp", Instant.now());
+        error.put("error", "USER_ALREADY_EXISTS");
+        error.put("message", "Ya existe un usuario con ese email");
+        error.put("timestamp", Instant.now());
 
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
-        }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    @ExceptionHandler(UsernameAlreadyExistsException.class)
+    public ResponseEntity<Map<String, Object>> handleUsernameExits(){
+
+        Map<String, Object> error = new HashMap<>();
+
+        error.put("error", "USERNAME_ALREADY_EXISTS");
+        error.put("message", "Ya existe un usuario con ese username");
+        error.put("timestamp", Instant.now());
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -46,6 +56,5 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(error);
     }
-
 
 }
