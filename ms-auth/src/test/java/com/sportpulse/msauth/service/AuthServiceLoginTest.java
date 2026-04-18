@@ -3,6 +3,7 @@ package com.sportpulse.msauth.service;
 import com.sportpulse.msauth.dto.LoginRequestDto;
 import com.sportpulse.msauth.dto.LoginResponseDto;
 import com.sportpulse.msauth.exception.InvalidCredentialsException;
+import com.sportpulse.msauth.mapper.AuthMapper;
 import com.sportpulse.msauth.model.User;
 import com.sportpulse.msauth.model.UserRole;
 import com.sportpulse.msauth.repository.UserRepository;
@@ -12,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -27,6 +29,12 @@ public class AuthServiceLoginTest {
 
     @Mock
     private JwtService jwtService;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private AuthMapper authMapper;
 
     @InjectMocks
     private AuthService authService;
@@ -44,6 +52,16 @@ public class AuthServiceLoginTest {
 
         when(userRepository.findByEmail("test@email.com")).thenReturn(Optional.of(user));
         when(jwtService.generateToken(user)).thenReturn("fake-jwt-token");
+        when(passwordEncoder.matches("Password1", user.getPassword())).thenReturn(true);
+
+        when(authMapper.toLoginResponseDto(any(), any()))
+                .thenReturn(LoginResponseDto.builder()
+                        .token("fake-jwt-token")
+                        .tokenType("Bearer")
+                        .expiresIn(3600)
+                        .userId("123")
+                        .build()
+                );
 
         LoginRequestDto request = new LoginRequestDto("test@email.com", "Password1");
         LoginResponseDto response = authService.login(request);
@@ -74,6 +92,7 @@ public class AuthServiceLoginTest {
                 .build();
 
         when(userRepository.findByEmail("test@email.com")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("WrongPassword1", user.getPassword())).thenReturn(false);
 
         LoginRequestDto request = new LoginRequestDto("test@email.com", "WrongPassword1");
 
