@@ -13,9 +13,16 @@ import com.sportpulse.msauth.mapper.UserMapper;
 import com.sportpulse.msauth.model.User;
 import com.sportpulse.msauth.model.UserRole;
 import com.sportpulse.msauth.repository.UserRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -66,6 +73,38 @@ public class AuthService {
         String token = jwtService.generateToken(user);
 
         return authMapper.toLoginResponseDto(user, token);
+    }
+
+    public ResponseEntity<?> validateToken(String token){
+        try {
+
+            Claims claims = jwtService.validateToken(token);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("valid", true);
+            response.put("userId", claims.getSubject());
+            response.put("username", claims.get("username"));
+            response.put("role", claims.get("role"));
+
+            return ResponseEntity.ok(response);
+
+        }catch (ExpiredJwtException ex){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    Map.of(
+                            "valid", false,
+                            "error", "TOKEN_EXPIRED",
+                            "message", "El token ha expirado"
+                    )
+            );
+        }catch (Exception ex){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    Map.of(
+                            "valid", false,
+                            "error", "INVALID_TOKEN",
+                            "message", "Token invalido"
+                    )
+            );
+        }
     }
 }
 
