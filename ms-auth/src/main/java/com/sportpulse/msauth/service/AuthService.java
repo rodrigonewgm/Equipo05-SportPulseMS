@@ -4,14 +4,17 @@ import com.sportpulse.msauth.dto.LoginRequestDto;
 import com.sportpulse.msauth.dto.LoginResponseDto;
 import com.sportpulse.msauth.dto.RegisterRequestDto;
 import com.sportpulse.msauth.dto.RegisterResponseDto;
+
+import com.sportpulse.msauth.exception.UserAlreadyExistsException;
 import com.sportpulse.msauth.exception.InvalidCredentialsException;
 import com.sportpulse.msauth.exception.UsernameAlreadyExistsException;
 import com.sportpulse.msauth.mapper.UserMapper;
 import com.sportpulse.msauth.model.User;
 import com.sportpulse.msauth.model.UserRole;
 import com.sportpulse.msauth.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,12 +22,26 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final JwtService jwtService;
 
-    public RegisterResponseDto register(RegisterRequestDto request) {
+    public AuthService(UserRepository userRepository){
+        this.userRepository = userRepository;
+    }
+
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserMapper userMapper){
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.userMapper = userMapper;
+    }
+    
+    public RegisterResponseDto register(RegisterRequestDto request){
+ 
+
         validateUser(request);
+
 
         // MapStruct crea el User (sin password ni role)
         User user = userMapper.toEntity(request);
@@ -33,34 +50,21 @@ public class AuthService {
         user.setRole(UserRole.USER);
 
         User savedUser = userRepository.save(user);
-
-        return userMapper.toResponse(savedUser);
-    }
-
-    private void validateUser(RegisterRequestDto request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new UsernameAlreadyExistsException("Ya existe un usuario con ese email");
-        }
-        if (userRepository.existsByUsername(request.getUsername())) {
-            throw new UsernameAlreadyExistsException("Ya existe un usuario con ese username");
-        }
-    }
-
-    public LoginResponseDto login(LoginRequestDto request) {
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(InvalidCredentialsException::new);
-
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new InvalidCredentialsException();
-        }
-
         String token = jwtService.generateToken(user);
 
-        return LoginResponseDto.builder()
-                .token(token)
-                .tokenType("Bearer")
-                .expiresIn(3600)
-                .userId(user.getId().toString())
-                .build();
+        return userMapper.toResponse(savedUser);
+
+   }
+
+    public void validateUser(RegisterRequestDto request){
+
+        if(userRepository.existsByEmail(request.getEmail())){
+            throw new UserAlreadyExistsException();
+        }
+
+        if(userRepository.existsByUsername(request.getUsername())){
+            throw new UsernameAlreadyExistsException();
+        }
     }
 }
+
