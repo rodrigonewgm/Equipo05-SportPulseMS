@@ -39,6 +39,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidCredentials(InvalidCredentialsException ex){
+
+        Map<String, Object> error = new HashMap<>();
+        error.put("error", "VALIDATION_ERROR");
+        error.put("message", "Email o contraseña incorrectos");
+        error.put("timestamp", Instant.now());
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationErrors(MethodArgumentNotValidException ex){
@@ -50,6 +60,4 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(error);
     }
-
-
 }
