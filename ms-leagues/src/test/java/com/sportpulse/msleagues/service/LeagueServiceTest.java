@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sportpulse.msleagues.client.ApiFootballClient;
 import com.sportpulse.msleagues.dto.LeagueResponseDto;
+import com.sportpulse.msleagues.mapper.LeagueMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,6 +25,9 @@ public class LeagueServiceTest {
 
     @InjectMocks
     private LeagueService leagueService;
+
+    @Mock
+    private LeagueMapper leagueMapper;
 
     @Test
     void getLeagues_sinFiltros_devuelveLista() {

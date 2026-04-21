@@ -12,7 +12,7 @@ import java.util.List;
 @RequestMapping("/api/leagues")
 @RequiredArgsConstructor
 
-public class leagueController {
+public class LeagueController {
 
     private final LeagueService leagueService;
 

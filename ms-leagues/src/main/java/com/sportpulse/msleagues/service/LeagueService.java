@@ -3,6 +3,7 @@ package com.sportpulse.msleagues.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sportpulse.msleagues.client.ApiFootballClient;
 import com.sportpulse.msleagues.dto.LeagueResponseDto;
+import com.sportpulse.msleagues.mapper.LeagueMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.util.List;
 public class LeagueService {
 
     private final ApiFootballClient apiFootballClient;
+    private final LeagueMapper leagueMapper;
 
     @Cacheable(value = "leagues", key = "#country + '-' + #season")
     public List<LeagueResponseDto> getLeagues(String country, Integer season) {
@@ -49,16 +51,16 @@ public class LeagueService {
                 }
             }
 
-            result.add(LeagueResponseDto.builder()
-                    .id(league.get("id").asInt())
-                    .name(league.get("name").asText())
-                    .type(league.get("type").asText())
-                    .country(country.get("name").asText())
-                    .logo(league.get("logo").asText())
-                    .currentSeason(currentSeasonYear)
-                    .startDate(startDate)
-                    .endDate(endDate)
-                    .build());
+            result.add(leagueMapper.toDto(
+                    league.get("id").asInt(),
+                    league.get("name").asText(),
+                    league.get("type").asText(),
+                    country.get("name").asText(),
+                    league.get("logo").asText(),
+                    currentSeasonYear,
+                    startDate,
+                    endDate
+            ));
         }
 
         return result;
