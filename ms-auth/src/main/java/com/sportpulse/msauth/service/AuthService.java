@@ -45,7 +45,7 @@ public class AuthService {
         user.setRole(UserRole.USER);
 
         User savedUser = userRepository.save(user);
-        String token = jwtService.generateToken(user);
+
 
         return userMapper.toResponse(savedUser);
 
