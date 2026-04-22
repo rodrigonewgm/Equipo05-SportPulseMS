@@ -1,0 +1,26 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: ms-auth
+          uri: http://localhost:9999  # no hay nada ahí
+          predicates:
+            - Path=/auth/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: authCB
+                fallbackUri: forward:/fallback/ms-auth
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      authCB:
+        slidingWindowSize: 2
+        failureRateThreshold: 50
+
+# Reduce logging during tests
+logging:
+  level:
+    org.springframework.cloud.gateway: WARN
+
