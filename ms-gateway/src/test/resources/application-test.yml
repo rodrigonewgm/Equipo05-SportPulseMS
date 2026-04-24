@@ -1,0 +1,17 @@
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowSize: 2
+        minimumNumberOfCalls: 1
+        failureRateThreshold: 50
+        waitDurationInOpenState: 1s
+    instances:
+      ms-auth-cb:
+        baseConfig: default
+
+logging:
+  level:
+    io.github.resilience4j: DEBUG
+    org.springframework.cloud.gateway: DEBUG
+

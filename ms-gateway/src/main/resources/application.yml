@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: ms-gateway
+  main:
+    web-application-type: reactive
   cloud:
     gateway:
       routes:
@@ -11,43 +13,126 @@ spring:
           uri: ${AUTH_SERVICE_URL:http://localhost:8081}
           predicates:
             - Path=/api/auth/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-auth-cb
+                fallbackUri: forward:/fallback/ms-auth
 
         - id: ms-leagues
           uri: ${LEAGUES_SERVICE_URL:http://localhost:8082}
           predicates:
             - Path=/api/leagues/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-leagues-cb
+                fallbackUri: forward:/fallback/ms-leagues
 
         - id: ms-teams
           uri: ${TEAMS_SERVICE_URL:http://localhost:8083}
           predicates:
             - Path=/api/teams/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-teams-cb
+                fallbackUri: forward:/fallback/ms-teams
 
         - id: ms-fixtures
           uri: ${FIXTURES_SERVICE_URL:http://localhost:8085}
           predicates:
             - Path=/api/fixtures/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-fixtures-cb
+                fallbackUri: forward:/fallback/ms-fixtures
 
         - id: ms-standings
           uri: ${STANDINGS_SERVICE_URL:http://localhost:8086}
           predicates:
             - Path=/api/standings/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-standings-cb
+                fallbackUri: forward:/fallback/ms-standings
 
         - id: ms-notifications
           uri: ${NOTIFICATIONS_SERVICE_URL:http://localhost:8088}
           predicates:
             - Path=/api/notifications/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-notifications-cb
+                fallbackUri: forward:/fallback/ms-notifications
 
         - id: ms-dashboard
           uri: ${DASHBOARD_SERVICE_URL:http://localhost:8089}
           predicates:
             - Path=/api/dashboard/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ms-dashboard-cb
+                fallbackUri: forward:/fallback/ms-dashboard
 
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
 
+
   web:
     resources:
       add-mappings: false
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowSize: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 2
+        slowCallDurationThreshold: 2s
+        slowCallRateThreshold: 50
+    instances:
+      ms-auth-cb:
+        baseConfig: default
+      ms-leagues-cb:
+        baseConfig: default
+      ms-teams-cb:
+        baseConfig: default
+      ms-fixtures-cb:
+        baseConfig: default
+      ms-standings-cb:
+        baseConfig: default
+      ms-notifications-cb:
+        baseConfig: default
+      ms-dashboard-cb:
+        baseConfig: default
+
+  timelimiter:
+    configs:
+      default:
+        timeoutDuration: 3s
+        cancelRunningFuture: true
+    instances:
+      ms-auth-cb:
+        baseConfig: default
+      ms-leagues-cb:
+        baseConfig: default
+      ms-teams-cb:
+        baseConfig: default
+      ms-fixtures-cb:
+        baseConfig: default
+      ms-standings-cb:
+        baseConfig: default
+      ms-notifications-cb:
+        baseConfig: default
+      ms-dashboard-cb:
+        baseConfig: default
 
 management:
   endpoints:
@@ -57,9 +142,6 @@ management:
   endpoint:
     health:
       show-details: always
-
-rate-limiting:
-  requests-per-minute: 60
 
 logging:
   level:
