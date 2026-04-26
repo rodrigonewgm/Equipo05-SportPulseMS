@@ -22,6 +22,15 @@ public class GlobalExceptionHandler {
         ));
     }
 
+    @ExceptionHandler(TeamNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleTeamNotFound(TeamNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+                "error", "TEAM_NOT_FOUND",
+                "message", ex.getMessage(),
+                "timestamp", Instant.now().toString()
+        ));
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, Object>> handleRuntime(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
