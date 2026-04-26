@@ -6,9 +6,9 @@ spring:
     name: ms-teams
 
 rapidapi:
-  key: ${RAPIDAPI_KEY:your-rapidapi-key-here}
-  host: api-football-v1.p.rapidapi.com
-  base-url: https://api-football-v1.p.rapidapi.com/v3
+  key: ${RAPIDAPI_KEY:your-api-key}
+  host: v3.football.api-sports.io
+  base-url: https://v3.football.api-sports.io
 
 jwt:
   secret: ${JWT_SECRET:sportpulse-secret-key-2025-development-only}
