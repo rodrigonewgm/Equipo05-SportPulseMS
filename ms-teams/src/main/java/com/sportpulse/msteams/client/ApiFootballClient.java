@@ -22,4 +22,15 @@ public class ApiFootballClient {
                 .bodyToMono(JsonNode.class)
                 .block();
     }
+
+    public JsonNode getTeamById(Integer teamId) {
+        return apiFootballWebClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/teams")
+                        .queryParam("id", teamId)
+                        .build())
+                .retrieve()
+                .bodyToMono(JsonNode.class)
+                .block();
+    }
 }

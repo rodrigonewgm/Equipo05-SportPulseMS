@@ -1,5 +1,6 @@
 package com.sportpulse.msteams.controller;
 
+import com.sportpulse.msteams.dto.TeamDetailResponseDto;
 import com.sportpulse.msteams.dto.TeamResponseDto;
 import com.sportpulse.msteams.service.TeamService;
 import jakarta.validation.constraints.NotNull;
@@ -22,5 +23,10 @@ public class TeamController {
             @RequestParam @NotNull Integer season) {
 
         return ResponseEntity.ok(teamService.getTeams(league, season));
+    }
+
+    @GetMapping("/{teamId}")
+    public ResponseEntity<TeamDetailResponseDto> getTeamById(@PathVariable Integer teamId) {
+        return ResponseEntity.ok(teamService.getTeamById(teamId));
     }
 }
