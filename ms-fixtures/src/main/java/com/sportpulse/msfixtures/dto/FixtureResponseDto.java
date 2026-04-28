@@ -16,4 +16,4 @@ public class FixtureResponseDto {
     private TeamInFixtureDto awayTeam;
     private VenueDto venue;
 }
-}
+
