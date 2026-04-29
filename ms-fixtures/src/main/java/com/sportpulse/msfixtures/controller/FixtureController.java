@@ -1,5 +1,6 @@
 package com.sportpulse.msfixtures.controller;
 
+import com.sportpulse.msfixtures.dto.FixtureEventDto;
 import com.sportpulse.msfixtures.dto.FixtureResponseDto;
 import com.sportpulse.msfixtures.service.FixtureService;
 import lombok.RequiredArgsConstructor;
@@ -23,5 +24,16 @@ public class FixtureController {
             @RequestParam(required = false) String status) {
 
         return ResponseEntity.ok(fixtureService.getFixtures(league, team, date, status));
+    }
+
+    @GetMapping("/live")
+    public ResponseEntity<List<FixtureResponseDto>> getLiveFixtures() {
+        return ResponseEntity.ok(fixtureService.getLiveFixtures());
+    }
+
+    @GetMapping("/{fixtureId}/events")
+    public ResponseEntity<List<FixtureEventDto>> getFixtureEvents(
+            @PathVariable Integer fixtureId) {
+        return ResponseEntity.ok(fixtureService.getFixtureEvents(fixtureId));
     }
 }
