@@ -8,9 +8,12 @@ spring:
     type: simple
 
 rapidapi:
-  key: ${RAPIDAPI_KEY:your-key-here}
+  key: ${RAPIDAPI_KEY:your-rapidapi-key-here}
   host: v3.football.api-sports.io
   base-url: https://v3.football.api-sports.io
+auth:
+  service:
+    url: ${AUTH_SERVICE_URL:http://localhost:8081}/api/auth/validate
 
 jwt:
   secret: ${JWT_SECRET:sportpulse-secret-key-2025-development-only}

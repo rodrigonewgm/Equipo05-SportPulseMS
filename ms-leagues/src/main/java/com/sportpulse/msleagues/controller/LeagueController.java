@@ -1,5 +1,6 @@
 package com.sportpulse.msleagues.controller;
 
+import com.sportpulse.msleagues.dto.LeagueDetailResponseDto;
 import com.sportpulse.msleagues.dto.LeagueResponseDto;
 import com.sportpulse.msleagues.service.LeagueService;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,13 @@ public class LeagueController {
     public ResponseEntity<List<LeagueResponseDto>> getLeagues(
             @RequestParam(required = false) String country,
             @RequestParam(required = false) Integer season) {
-
         return ResponseEntity.ok(leagueService.getLeagues(country, season));
+    }
+
+    @GetMapping("/{leagueId}")
+    public ResponseEntity<LeagueDetailResponseDto> getLeagueDetail(
+            @PathVariable Integer leagueId,
+            @RequestHeader("Authorization") String authHeader) {
+        return ResponseEntity.ok(leagueService.getLeagueDetail(leagueId, authHeader));
     }
 }
