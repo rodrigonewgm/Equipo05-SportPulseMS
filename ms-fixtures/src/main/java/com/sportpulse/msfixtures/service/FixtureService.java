@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.sportpulse.msfixtures.client.ApiFootballClient;
 import com.sportpulse.msfixtures.client.TeamsClient;
 import com.sportpulse.msfixtures.dto.*;
+import com.sportpulse.msfixtures.exception.FixtureNotFoundException;
 import com.sportpulse.msfixtures.mapper.FixtureMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -102,6 +103,70 @@ public class FixtureService {
                     awayTeam,
                     venueDto
             ));
+        }
+
+        return result;
+    }
+
+    public List<FixtureResponseDto> getLiveFixtures() {
+        JsonNode response = apiFootballClient.getLiveFixtures();
+        return parseFixtures(response);
+    }
+
+    public List<FixtureEventDto> getFixtureEvents(Integer fixtureId) {
+        // Primero verificar que el partido existe
+        JsonNode fixtureCheck = apiFootballClient.getFixtureById(fixtureId);
+        if (fixtureCheck == null || !fixtureCheck.has("response") ||
+                fixtureCheck.get("response").isEmpty()) {
+            throw new FixtureNotFoundException(fixtureId);
+        }
+
+        JsonNode response = apiFootballClient.getFixtureEvents(fixtureId);
+        return parseEvents(response);
+    }
+
+    private List<FixtureEventDto> parseEvents(JsonNode response) {
+        List<FixtureEventDto> result = new ArrayList<>();
+
+        if (response == null || !response.has("response")) {
+            return result;
+        }
+
+        for (JsonNode item : response.get("response")) {
+            JsonNode teamNode = item.get("team");
+            JsonNode playerNode = item.get("player");
+            JsonNode assistNode = item.get("assist");
+
+            TeamInFixtureDto team = TeamInFixtureDto.builder()
+                    .id(teamNode.get("id").asInt())
+                    .name(teamNode.get("name").asText())
+                    .build();
+
+            PlayerDto player = PlayerDto.builder()
+                    .id(playerNode.has("id") && !playerNode.get("id").isNull() ?
+                            playerNode.get("id").asInt() : null)
+                    .name(playerNode.has("name") && !playerNode.get("name").isNull() ?
+                            playerNode.get("name").asText() : null)
+                    .build();
+
+            PlayerDto assist = null;
+            if (assistNode != null && !assistNode.isNull() &&
+                    assistNode.has("name") && !assistNode.get("name").isNull()) {
+                assist = PlayerDto.builder()
+                        .id(assistNode.has("id") && !assistNode.get("id").isNull() ?
+                                assistNode.get("id").asInt() : null)
+                        .name(assistNode.get("name").asText())
+                        .build();
+            }
+
+            result.add(FixtureEventDto.builder()
+                    .elapsed(item.has("time") ? item.get("time").get("elapsed").asInt() : null)
+                    .type(item.has("type") ? item.get("type").asText() : null)
+                    .detail(item.has("detail") ? item.get("detail").asText() : null)
+                    .team(team)
+                    .player(player)
+                    .assist(assist)
+                    .build());
         }
 
         return result;
