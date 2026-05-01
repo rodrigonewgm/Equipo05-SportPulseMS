@@ -30,4 +30,6 @@ public class Subscription {
     private String type;
 
     private Instant createdAt;
+
+    private Instant cancelledAt;
 }

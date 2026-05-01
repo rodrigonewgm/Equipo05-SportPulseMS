@@ -10,6 +10,9 @@ import com.sportpulse.msnotifications.repository.SubscriptionRepository;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import java.util.Optional;
+import java.util.UUID;
+
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -48,5 +51,25 @@ public class NotificationServiceTest {
         var result = notificationService.getUserSubscriptions("token");
 
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void cancelSubscription_ok_devuelveCancelled() {
+
+        UUID id = UUID.randomUUID();
+
+        Subscription sub = new Subscription();
+        sub.setId(id);
+        sub.setUserId("user-demo");
+        sub.setActive(true);
+
+        when(repository.findById(id)).thenReturn(Optional.of(sub));
+        when(repository.save(any())).thenReturn(sub);
+
+        var result = notificationService.cancelSubscription(id, "token");
+
+        assertEquals("CANCELLED", result.getStatus());
+        assertEquals(id, result.getSubscriptionId());
+        assertNotNull(result.getCancelledAt());
     }
 }

@@ -1,6 +1,8 @@
 package com.sportpulse.msnotifications.controller;
 
 import com.sportpulse.msnotifications.client.AuthClient;
+import com.sportpulse.msnotifications.dto.CancelSubscriptionResponseDTO;
+import com.sportpulse.msnotifications.dto.SubscriptionListDTO;
 import com.sportpulse.msnotifications.dto.SubscriptionRequestDTO;
 import com.sportpulse.msnotifications.dto.SubscriptionResponseDTO;
 import com.sportpulse.msnotifications.entity.Subscription;
@@ -23,7 +25,14 @@ public class NotificationController {
             @RequestBody SubscriptionRequestDTO request,
             @RequestHeader("Authorization") String token
     ) {
-        authClient.validate(token);
+        try {
+            authClient.validate(token);
+        } catch (Exception e) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.UNAUTHORIZED,
+                    "Token inválido o expirado"
+            );
+        }
 
         Subscription sub = notificationService.subscribe(request, token);
 
@@ -42,15 +51,29 @@ public class NotificationController {
     }
 
     @GetMapping("/subscriptions")
-    public ResponseEntity<List<SubscriptionResponseDTO>> getSubscriptions(
+    public ResponseEntity<List<SubscriptionListDTO>> getSubscriptions(
             @RequestHeader("Authorization") String token
     ) {
 
         authClient.validate(token);
 
-        List<SubscriptionResponseDTO> result =
+        List<SubscriptionListDTO> result =
                 notificationService.getUserSubscriptions(token);
 
         return ResponseEntity.ok(result);
+    }
+
+    @DeleteMapping("/subscribe/{id}")
+    public ResponseEntity<CancelSubscriptionResponseDTO> cancelSubscription(
+            @PathVariable("id") java.util.UUID subscriptionId,
+            @RequestHeader("Authorization") String token
+    ) {
+
+        authClient.validate(token);
+
+        CancelSubscriptionResponseDTO response =
+                notificationService.cancelSubscription(subscriptionId, token);
+
+        return ResponseEntity.ok(response);
     }
 }
