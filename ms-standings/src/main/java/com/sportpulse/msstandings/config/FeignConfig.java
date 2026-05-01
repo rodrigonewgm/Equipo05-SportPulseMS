@@ -15,7 +15,6 @@ public class FeignConfig {
     public RequestInterceptor requestInterceptor() {
         return requestTemplate -> {
 
-            // 🔥 ESTE ES EL HEADER CORRECTO
             requestTemplate.header("x-apisports-key", apiKey);
         };
     }

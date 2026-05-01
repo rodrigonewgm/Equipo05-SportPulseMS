@@ -26,4 +26,6 @@ public class StandingDTO {
     private Integer goalDifference;
 
     private String form;
+
+    private String description;
 }
