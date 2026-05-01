@@ -204,6 +204,7 @@ services:
       FIXTURES_SERVICE_URL: http://ms-fixtures:8085
       STANDINGS_SERVICE_URL: http://ms-standings:8086
       LEAGUES_SERVICE_URL: http://ms-leagues:8082
+      AUTH_SERVICE_URL: http://ms-auth:8081
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:8089/actuator/health || exit 1"]
       interval: 15s
