@@ -7,6 +7,11 @@ import com.sportpulse.msnotifications.dto.SubscriptionRequestDTO;
 import com.sportpulse.msnotifications.dto.SubscriptionResponseDTO;
 import com.sportpulse.msnotifications.entity.Subscription;
 import com.sportpulse.msnotifications.service.NotificationService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,11 +21,19 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/notifications")
 @RequiredArgsConstructor
+@Tag(name = "Notifications", description = "Suscripciones y alertas de eventos de fútbol")
 public class NotificationController {
     private final NotificationService notificationService;
     private final AuthClient authClient;
 
     @PostMapping("/subscribe")
+    @Operation(summary = "Crear suscripción", description = "Suscribe al usuario a alertas de un equipo",
+            security = @SecurityRequirement(name = "Bearer"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Suscripción creada"),
+            @ApiResponse(responseCode = "401", description = "Token inválido o ausente"),
+            @ApiResponse(responseCode = "409", description = "Suscripción duplicada")
+    })
     public ResponseEntity<SubscriptionResponseDTO> subscribe(
             @RequestBody SubscriptionRequestDTO request,
             @RequestHeader("Authorization") String token
@@ -51,6 +64,9 @@ public class NotificationController {
     }
 
     @GetMapping("/subscriptions")
+    @Operation(summary = "Listar suscripciones", description = "Devuelve las suscripciones activas del usuario",
+            security = @SecurityRequirement(name = "Bearer"))
+    @ApiResponse(responseCode = "200", description = "Lista de suscripciones")
     public ResponseEntity<List<SubscriptionListDTO>> getSubscriptions(
             @RequestHeader("Authorization") String token
     ) {
@@ -64,6 +80,13 @@ public class NotificationController {
     }
 
     @DeleteMapping("/subscribe/{id}")
+    @Operation(summary = "Cancelar suscripción", description = "Cancela una suscripción activa",
+            security = @SecurityRequirement(name = "Bearer"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Suscripción cancelada"),
+            @ApiResponse(responseCode = "403", description = "No autorizado"),
+            @ApiResponse(responseCode = "404", description = "Suscripción no encontrada")
+    })
     public ResponseEntity<CancelSubscriptionResponseDTO> cancelSubscription(
             @PathVariable("id") java.util.UUID subscriptionId,
             @RequestHeader("Authorization") String token
