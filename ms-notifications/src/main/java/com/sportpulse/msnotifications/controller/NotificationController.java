@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/notifications")
 @RequiredArgsConstructor
@@ -37,5 +39,18 @@ public class NotificationController {
         response.setCreatedAt(sub.getCreatedAt());
 
         return ResponseEntity.status(201).body(response);
+    }
+
+    @GetMapping("/subscriptions")
+    public ResponseEntity<List<SubscriptionResponseDTO>> getSubscriptions(
+            @RequestHeader("Authorization") String token
+    ) {
+
+        authClient.validate(token);
+
+        List<SubscriptionResponseDTO> result =
+                notificationService.getUserSubscriptions(token);
+
+        return ResponseEntity.ok(result);
     }
 }

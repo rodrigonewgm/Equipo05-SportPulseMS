@@ -39,4 +39,14 @@ public class NotificationServiceTest {
                 () -> notificationService.subscribe(request, "token")
         );
     }
+
+    @Test
+    void getUserSubscriptions_sinDatos_devuelveListaVacia() {
+
+        when(repository.findAll()).thenReturn(java.util.List.of());
+
+        var result = notificationService.getUserSubscriptions("token");
+
+        assertTrue(result.isEmpty());
+    }
 }
