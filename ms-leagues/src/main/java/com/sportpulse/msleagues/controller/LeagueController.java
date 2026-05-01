@@ -36,6 +36,13 @@ public class LeagueController {
     }
 
     @GetMapping("/{leagueId}")
+    @Operation(summary = "Detalle de liga", description = "Devuelve el detalle completo de una liga por ID",
+            security = @SecurityRequirement(name = "Bearer"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Detalle de la liga"),
+            @ApiResponse(responseCode = "401", description = "Token JWT inválido o ausente"),
+            @ApiResponse(responseCode = "404", description = "Liga no encontrada")
+    })
     public ResponseEntity<LeagueDetailResponseDto> getLeagueDetail(
             @PathVariable Integer leagueId,
             @RequestHeader("Authorization") String authHeader) {
