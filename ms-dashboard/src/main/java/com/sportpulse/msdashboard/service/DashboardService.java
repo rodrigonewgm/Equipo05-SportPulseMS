@@ -44,7 +44,6 @@ public class DashboardService {
             response.setMatchesToday(List.of());
         }
 
-        // 🔥 STANDINGS
         try {
             StandingResponse standings = standingsClient.getStandings(
                     token,
@@ -72,7 +71,6 @@ public class DashboardService {
             response.setStandingsPreview(List.of());
         }
 
-        // 🔥 SCORERS
         try {
             TopScorerResponse scorerResponse =
                     scorerClient.getTopScorers(apiKey, league, season);
