@@ -87,6 +87,12 @@ spring:
     resources:
       add-mappings: false
 
+sportpulse:
+  gateway:
+    rate-limit:
+      enabled: true
+      limit-per-minute: 60
+
 resilience4j:
   circuitbreaker:
     configs:
