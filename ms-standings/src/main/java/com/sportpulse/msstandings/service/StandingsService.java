@@ -22,7 +22,6 @@ public class StandingsService {
         ApiFootballStandingsResponse apiResponse =
                 apiFootballClient.getStandings(league, season);
 
-        // 🔥 validación básica para evitar null
         if (apiResponse == null || apiResponse.getResponse() == null || apiResponse.getResponse().isEmpty()) {
             throw new RuntimeException("API-Football no devolvió datos");
         }
@@ -89,5 +88,86 @@ public class StandingsService {
         response.setStandings(result);
 
         return response;
+    }
+
+    public StandingDTO getTeamStanding(Integer teamId, Integer league, Integer season) {
+
+        ApiFootballStandingsResponse apiResponse =
+                apiFootballClient.getStandings(league, season);
+
+        if (apiResponse == null || apiResponse.getResponse() == null || apiResponse.getResponse().isEmpty()) {
+            throw new RuntimeException("No hay datos");
+        }
+
+        ApiFootballStandingsResponse.League leagueData =
+                apiResponse.getResponse().get(0).getLeague();
+
+        List<ApiFootballStandingsResponse.Standing> standings =
+                leagueData.getStandings().get(0);
+
+        return standings.stream()
+                .filter(s -> s.getTeam() != null && s.getTeam().getId() == teamId.intValue())
+                .findFirst()
+                .map(s -> {
+
+                    StandingDTO dto = new StandingDTO();
+
+                    dto.setRank(s.getRank());
+                    dto.setPoints(s.getPoints());
+                    dto.setForm(s.getForm());
+                    dto.setDescription(getDescriptionByRank(s.getRank()));
+
+                    if (s.getAll() != null) {
+                        dto.setPlayed(s.getAll().getPlayed());
+                        dto.setWon(s.getAll().getWin());
+                        dto.setDrawn(s.getAll().getDraw());
+                        dto.setLost(s.getAll().getLose());
+
+                        if (s.getAll().getGoals() != null) {
+                            int gf = s.getAll().getGoals().getForGoals();
+                            int ga = s.getAll().getGoals().getAgainst();
+
+                            dto.setGoalsFor(gf);
+                            dto.setGoalsAgainst(ga);
+                            dto.setGoalDifference(gf - ga);
+                        }
+                    }
+
+                    if (s.getTeam() != null) {
+                        TeamDTO teamDTO = new TeamDTO();
+                        teamDTO.setId(s.getTeam().getId());
+                        teamDTO.setName(s.getTeam().getName());
+                        teamDTO.setLogo(s.getTeam().getLogo());
+                        dto.setTeam(teamDTO);
+                    }
+
+                    return dto;
+
+                })
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.NOT_FOUND,
+                        "Equipo no encontrado en esa liga/temporada"
+                ));
+    }
+
+    private String getDescriptionByRank(int rank) {
+
+        if (rank >= 1 && rank <= 4) {
+            return "Promotion - Champions League (Group Stage)";
+        }
+
+        if (rank == 5) {
+            return "Promotion - Europa League (Group Stage)";
+        }
+
+        if (rank == 6) {
+            return "Promotion - Conference League (Qualification)";
+        }
+
+        if (rank >= 18) {
+            return "Relegation";
+        }
+
+        return "Mid-table";
     }
 }
