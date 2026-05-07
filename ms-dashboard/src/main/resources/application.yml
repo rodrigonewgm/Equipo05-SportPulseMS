@@ -12,6 +12,9 @@ rapidapi:
   key: ${RAPIDAPI_KEY:your-key-here}
   host: v3.football.api-sports.io
   base-url: https://v3.football.api-sports.io
+auth:
+  service:
+    url: ${AUTH_SERVICE_URL:localhost:8081}
 
 services:
   fixtures-url: ${FIXTURES_SERVICE_URL:http://localhost:8085}

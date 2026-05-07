@@ -17,6 +17,9 @@ jwt:
 
 services:
   teams-url: ${TEAMS_SERVICE_URL:http://localhost:8083}
+teams:
+  service:
+    url: ${TEAMS_SERVICE_URL:localhost:8083}
 
 springdoc:
   api-docs:

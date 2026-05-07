@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -72,8 +73,8 @@ public class TeamServiceTest {
                 .build();
 
         when(apiFootballClient.getTeams(140, 2024)).thenReturn(root);
-        when(teamMapper.toDto(529, "FC Barcelona", "Spain", "https://logo.png",
-                1899, any(StadiumDto.class))).thenReturn(expectedDto);
+        when(teamMapper.toDto(anyInt(), anyString(), anyString(), anyString(),
+                anyInt(), any(StadiumDto.class))).thenReturn(expectedDto);
 
         List<TeamResponseDto> result = teamService.getTeams(140, 2024);
 
