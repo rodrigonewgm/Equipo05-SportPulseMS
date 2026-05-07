@@ -7,6 +7,7 @@ import com.sportpulse.msdashboard.dto.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 
@@ -30,7 +31,8 @@ class DashboardServiceTest {
         service = new DashboardService(fixtureClient, standingsClient, scorerClient);
 
         service = Mockito.spy(service);
-        doReturn("test-key").when(service).getClass(); // hack simple (no rompe test)
+        service = new DashboardService(fixtureClient, standingsClient, scorerClient);
+        ReflectionTestUtils.setField(service, "apiKey", "test-key");
     }
 
     @Test

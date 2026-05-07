@@ -1,10 +1,12 @@
 package com.sportpulse.msgateway.controller;
 
+import com.sportpulse.msgateway.config.RateLimitConfiguration;
 import com.sportpulse.msgateway.service.HealthService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
@@ -14,6 +16,7 @@ import java.util.Map;
 import static org.mockito.Mockito.when;
 
 @WebFluxTest(HealthController.class)
+@Import(RateLimitConfiguration.class)
 class HealthControllerTest {
 
     @Autowired
